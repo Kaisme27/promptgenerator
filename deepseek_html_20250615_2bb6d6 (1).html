@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Navigator | Discover Top AI Tools & Prompts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#0ea5e9',
+                        dark: '#0f172a',
+                        card: '#1e293b'
+                    },
+                    animation: {
+                        'spin-slow': 'spin 20s linear infinite',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'heading': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .prompt-box {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .prompt-box::before {
+            content: 'PROMPT';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #6366f1;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 0 10px 0 5px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .tool-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .tool-card:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #6366f1;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+        }
+        
+        .domain-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        
+        .domain-card:hover {
+            transform: translateY(-8px) rotateY(5deg);
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+        }
+        
+        .hero-pattern {
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 20%), 
+                        radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 20%);
+        }
+        
+        .tool-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+    <!-- Navigation -->
+    <nav class="bg-dark bg-opacity-80 backdrop-blur-lg py-4 px-6 sticky top-0 z-50 border-b border-gray-800">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-primary w-10 h-10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-brain text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold text-white font-heading">AIToolFinder</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-300 hover:text-white relative nav-link">Home</a>
+                <a href="#" class="text-gray-300 hover:text-white relative nav-link">Categories</a>
+                <a href="#" class="text-gray-300 hover:text-white relative nav-link">Top Tools</a>
+                <a href="#" class="text-gray-300 hover:text-white relative nav-link">Prompts</a>
+                <a href="#" class="text-gray-300 hover:text-white relative nav-link">Resources</a>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-300 hover:text-white">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="bg-primary hover:bg-indigo-500 text-white px-4 py-2 rounded-lg transition">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="pt-20 pb-16 px-4 hero-pattern">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="inline-flex items-center bg-indigo-900 bg-opacity-50 text-indigo-300 px-4 py-2 rounded-full mb-6">
+                <i class="fas fa-crown mr-2"></i>Based on Toolify.ai's Top AI Tools Ranking
+            </div>
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 font-heading">
+                Discover <span class="text-primary">Top AI Tools</span> <br>
+                for Every <span class="text-accent">Professional Need</span>
+            </h1>
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+                We've curated the most popular AI tools according to Toolify.ai's rankings and matched them to your specific scenarios
+            </p>
+            
+            <div class="flex justify-center mt-8 space-x-4">
+                <div class="flex items-center text-gray-400">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i> #1 ChatGPT
+                </div>
+                <div class="flex items-center text-gray-400">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i> #2 Gemini
+                </div>
+                <div class="flex items-center text-gray-400">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i> #3 Perplexity
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Categories Section -->
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-white text-center mb-4 section-title font-heading">Popular AI Categories</h2>
+            <p class="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+                Explore top-ranked AI tools across 7 categories with 32+ use cases
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Content Creation -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-green-400">#1 ChatGPT</div>
+                    <div class="w-14 h-14 bg-indigo-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-pen-nib text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Content Creation</h3>
+                    <p class="text-gray-400 mb-4">Social media, blogs, scripts, storytelling</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-1 rounded">ChatGPT</span>
+                        <span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-1 rounded">Gemini</span>
+                        <span class="bg-indigo-900 text-indigo-300 text-xs px-2 py-1 rounded">Jasper</span>
+                    </div>
+                </div>
+                
+                <!-- Marketing -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-yellow-400">#7 Copy.ai</div>
+                    <div class="w-14 h-14 bg-purple-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-bullhorn text-2xl text-secondary"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Marketing</h3>
+                    <p class="text-gray-400 mb-4">Ad copy, social media, brand messaging</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-purple-900 text-purple-300 text-xs px-2 py-1 rounded">Copy.ai</span>
+                        <span class="bg-purple-900 text-purple-300 text-xs px-2 py-1 rounded">Anyword</span>
+                        <span class="bg-purple-900 text-purple-300 text-xs px-2 py-1 rounded">HubSpot</span>
+                    </div>
+                </div>
+                
+                <!-- Productivity -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-blue-400">#4 Claude</div>
+                    <div class="w-14 h-14 bg-blue-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-chart-line text-2xl text-accent"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Productivity</h3>
+                    <p class="text-gray-400 mb-4">Reports, meetings, presentations</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-900 text-blue-300 text-xs px-2 py-1 rounded">Claude</span>
+                        <span class="bg-blue-900 text-blue-300 text-xs px-2 py-1 rounded">Notion AI</span>
+                        <span class="bg-blue-900 text-blue-300 text-xs px-2 py-1 rounded">Otter.ai</span>
+                    </div>
+                </div>
+                
+                <!-- AI Art -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-pink-400">#5 Midjourney</div>
+                    <div class="w-14 h-14 bg-pink-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-palette text-2xl text-pink-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">AI Art</h3>
+                    <p class="text-gray-400 mb-4">Concept art, illustrations, designs</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-pink-900 text-pink-300 text-xs px-2 py-1 rounded">Midjourney</span>
+                        <span class="bg-pink-900 text-pink-300 text-xs px-2 py-1 rounded">DALL·E 3</span>
+                        <span class="bg-pink-900 text-pink-300 text-xs px-2 py-1 rounded">StableDiffusion</span>
+                    </div>
+                </div>
+                
+                <!-- Education -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-cyan-400">#11 QuillBot</div>
+                    <div class="w-14 h-14 bg-cyan-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-graduation-cap text-2xl text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Education</h3>
+                    <p class="text-gray-400 mb-4">Course design, materials, presentations</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-cyan-900 text-cyan-300 text-xs px-2 py-1 rounded">QuillBot</span>
+                        <span class="bg-cyan-900 text-cyan-300 text-xs px-2 py-1 rounded">Khanmigo</span>
+                        <span class="bg-cyan-900 text-cyan-300 text-xs px-2 py-1 rounded">Gradescope</span>
+                    </div>
+                </div>
+                
+                <!-- Development -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-green-400">#8 GitHub Copilot</div>
+                    <div class="w-14 h-14 bg-green-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-code text-2xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Development</h3>
+                    <p class="text-gray-400 mb-4">Coding, debugging, web development</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded">GitHub Copilot</span>
+                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded">Replit</span>
+                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded">Tabnine</span>
+                    </div>
+                </div>
+                
+                <!-- Workplace -->
+                <div class="domain-card bg-card p-6 rounded-2xl cursor-pointer relative">
+                    <div class="tool-badge text-yellow-400">#10 Grammarly</div>
+                    <div class="w-14 h-14 bg-yellow-900 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-briefcase text-2xl text-yellow-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Workplace</h3>
+                    <p class="text-gray-400 mb-4">Client solutions, resumes, presentations</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-1 rounded">Grammarly</span>
+                        <span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-1 rounded">Tome</span>
+                        <span class="bg-yellow-900 text-yellow-300 text-xs px-2 py-1 rounded">Beautiful.ai</span>
+                    </div>
+                </div>
+                
+                <!-- New Category -->
+                <div class="domain-card bg-gray-800 border-2 border-dashed border-gray-600 p-6 rounded-2xl cursor-pointer flex flex-col items-center justify-center">
+                    <div class="w-14 h-14 bg-gray-700 rounded-xl flex items-center justify-center mb-5">
+                        <i class="fas fa-plus text-2xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-300 mb-3">Suggest a Category</h3>
+                    <p class="text-gray-500 text-center">What should we add next?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Scenarios -->
+    <section class="py-16 px-4 bg-gray-900 bg-opacity-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-4 section-title font-heading">Top Tool Matches for Common Scenarios</h2>
+                    <p class="text-gray-400 max-w-2xl">Based on Toolify.ai's rankings and real-world effectiveness</p>
+                </div>
+                <button class="mt-4 md:mt-0 flex items-center text-accent hover:text-cyan-300">
+                    View all scenarios <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Scenario 1: LinkedIn Content -->
+                <div class="bg-card rounded-2xl overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-indigo-900 text-indigo-300 text-xs px-3 py-1 rounded-full mb-2">Content Creation</span>
+                                <h3 class="text-lg font-bold text-white">Professional LinkedIn Posts</h3>
+                            </div>
+                            <div class="bg-gray-700 p-2 rounded-lg">
+                                <i class="fab fa-linkedin text-blue-400"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 mb-6">Create industry-leading content that positions you as an expert</p>
+                        
+                        <div class="prompt-box p-4 mb-6 text-sm">
+                            As a [tech industry CEO], write about [AI ethics]:<br>
+                            1. Start with a recent industry event<br>
+                            2. Present 3-tier argument:<br>
+                            &nbsp;&nbsp;- Technical: model bias mechanisms<br>
+                            &nbsp;&nbsp;- Application: healthcare risks<br>
+                            &nbsp;&nbsp;- Societal: legislative gaps<br>
+                            3. End with actionable solutions<br>
+                            4. Include #AIgovernance #TechEthics hashtags
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-gray-300 font-medium mb-2">Top Recommended Tools:</h4>
+                            <div class="space-y-3">
+                                <a href="https://chat.openai.com" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-green-500 font-bold">#1</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">ChatGPT</div>
+                                        <div class="text-gray-400 text-xs">Best for content generation</div>
+                                    </div>
+                                </a>
+                                <a href="https://gemini.google.com" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-blue-500 font-bold">#2</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Gemini</div>
+                                        <div class="text-gray-400 text-xs">Real-time research integration</div>
+                                    </div>
+                                </a>
+                                <a href="https://www.copy.ai" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-purple-500 font-bold">#7</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Copy.ai</div>
+                                        <div class="text-gray-400 text-xs">Social media templates</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg mt-4 transition">
+                            Save to Favorites <i class="far fa-bookmark ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Scenario 2: Investor Pitch -->
+                <div class="bg-card rounded-2xl overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-blue-900 text-blue-300 text-xs px-3 py-1 rounded-full mb-2">Productivity</span>
+                                <h3 class="text-lg font-bold text-white">Investor Pitch Deck</h3>
+                            </div>
+                            <div class="bg-gray-700 p-2 rounded-lg">
+                                <i class="fas fa-chart-line text-green-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 mb-6">Create compelling presentations for funding rounds</p>
+                        
+                        <div class="prompt-box p-4 mb-6 text-sm">
+                            Create a pitch deck for [AI startup] seeking [Series A]:<br>
+                            1. Problem: [specific pain point] with data<br>
+                            2. Solution: tech demo visualization<br>
+                            3. Market: TAM/SAM/SOM analysis<br>
+                            4. Team: expertise visualization<br>
+                            5. Financials: 3-year projection<br>
+                            Design: professional, data-driven<br>
+                            Include interactive elements
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-gray-300 font-medium mb-2">Top Recommended Tools:</h4>
+                            <div class="space-y-3">
+                                <a href="https://www.tome.app" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-yellow-500 font-bold">#13</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Tome</div>
+                                        <div class="text-gray-400 text-xs">AI-powered presentations</div>
+                                    </div>
+                                </a>
+                                <a href="https://gamma.app" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-blue-400 font-bold">#15</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Gamma</div>
+                                        <div class="text-gray-400 text-xs">Interactive decks</div>
+                                    </div>
+                                </a>
+                                <a href="https://claude.ai" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-orange-500 font-bold">#4</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Claude</div>
+                                        <div class="text-gray-400 text-xs">Long document handling</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg mt-4 transition">
+                            Save to Favorites <i class="far fa-bookmark ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Scenario 3: AI Art Generation -->
+                <div class="bg-card rounded-2xl overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block bg-pink-900 text-pink-300 text-xs px-3 py-1 rounded-full mb-2">AI Art</span>
+                                <h3 class="text-lg font-bold text-white">Product Concept Design</h3>
+                            </div>
+                            <div class="bg-gray-700 p-2 rounded-lg">
+                                <i class="fas fa-paint-brush text-pink-500"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 mb-6">Generate professional product visuals and designs</p>
+                        
+                        <div class="prompt-box p-4 mb-6 text-sm">
+                            Design concept for [sustainable water bottle]:<br>
+                            1. Materials: recycled ocean plastic<br>
+                            2. Features: self-cleaning, collapsible<br>
+                            3. Visual style: minimalist, eco-friendly<br>
+                            4. Include:<br>
+                            &nbsp;&nbsp;- 3D render from multiple angles<br>
+                            &nbsp;&nbsp;- Material texture close-up<br>
+                            &nbsp;&nbsp;- Usage scenario visualization<br>
+                            5. Color palette: ocean blues & greens
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-gray-300 font-medium mb-2">Top Recommended Tools:</h4>
+                            <div class="space-y-3">
+                                <a href="https://www.midjourney.com" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-pink-500 font-bold">#5</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Midjourney</div>
+                                        <div class="text-gray-400 text-xs">High-quality artistic renders</div>
+                                    </div>
+                                </a>
+                                <a href="https://openai.com/dall-e-2" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-purple-500 font-bold">#6</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">DALL·E 3</div>
+                                        <div class="text-gray-400 text-xs">Prompt understanding</div>
+                                    </div>
+                                </a>
+                                <a href="https://stablediffusionweb.com" target="_blank" class="tool-card flex items-center p-3 rounded-lg">
+                                    <div class="bg-gray-700 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-blue-500 font-bold">#16</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-white font-medium">Stable Diffusion</div>
+                                        <div class="text-gray-400 text-xs">Customizable open-source</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg mt-4 transition">
+                            Save to Favorites <i class="far fa-bookmark ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Tools Section -->
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold text-white text-center mb-16 section-title font-heading">Top 10 AI Tools (Based on Toolify.ai)</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <!-- Tool 1 -->
+                <a href="https://chat.openai.com" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-400 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">1</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-green-400">ChatGPT</h3>
+                        <p class="text-gray-400 text-sm">Most versatile AI assistant</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 2 -->
+                <a href="https://gemini.google.com" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">2</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400">Gemini</h3>
+                        <p class="text-gray-400 text-sm">Google's AI with web access</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 3 -->
+                <a href="https://www.perplexity.ai" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">3</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-purple-400">Perplexity AI</h3>
+                        <p class="text-gray-400 text-sm">Research-focused AI assistant</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 4 -->
+                <a href="https://claude.ai" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">4</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-orange-400">Claude</h3>
+                        <p class="text-gray-400 text-sm">Large context window AI</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 5 -->
+                <a href="https://www.midjourney.com" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">5</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-pink-400">Midjourney</h3>
+                        <p class="text-gray-400 text-sm">Top AI image generator</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 6 -->
+                <a href="https://openai.com/dall-e-2" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">6</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-purple-300">DALL·E 3</h3>
+                        <p class="text-gray-400 text-sm">Text-to-image by OpenAI</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 7 -->
+                <a href="https://www.copy.ai" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">7</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-violet-400">Copy.ai</h3>
+                        <p class="text-gray-400 text-sm">Marketing content generation</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 8 -->
+                <a href="https://github.com/features/copilot" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">8</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-green-400">GitHub Copilot</h3>
+                        <p class="text-gray-400 text-sm">AI pair programmer</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 9 -->
+                <a href="https://www.synthesia.io" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">9</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan-400">Synthesia</h3>
+                        <p class="text-gray-400 text-sm">AI video generation</p>
+                    </div>
+                </a>
+                
+                <!-- Tool 10 -->
+                <a href="https://www.grammarly.com" target="_blank" class="group">
+                    <div class="bg-card rounded-2xl p-6 text-center transition transform hover:scale-105">
+                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+                            <span class="text-white text-2xl font-bold">10</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white mb-2 group-hover:text-yellow-400">Grammarly</h3>
+                        <p class="text-gray-400 text-sm">Writing assistant</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-4 bg-gradient-to-r from-indigo-900 to-purple-900">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6 font-heading">Find Your Perfect AI Tools Today</h2>
+            <p class="text-indigo-200 text-xl mb-10">Join our community of 50,000+ professionals using the top-ranked AI tools</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <button class="bg-white text-indigo-900 hover:bg-gray-100 px-8 py-4 rounded-xl text-lg font-bold transition transform hover:scale-105">
+                    Create Free Account <i class="fas fa-user-plus ml-2"></i>
+                </button>
+                <button class="bg-transparent border-2 border-white text-white hover:bg-white hover:text-indigo-900 px-8 py-4 rounded-xl text-lg font-bold transition">
+                    Explore All Tools
+                </button>
+            </div>
+            
+            <div class="mt-10 flex flex-wrap justify-center gap-6">
+                <div class="flex items-center text-white">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i> Based on Toolify.ai rankings
+                </div>
+                <div class="flex items-center text-white">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i> Free forever plan
+                </div>
+                <div class="flex items-center text-white">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i> 1,000+ free prompts
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-4 bg-dark">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="bg-primary w-10 h-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-brain text-white text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold text-white font-heading">AIToolFinder</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        The most comprehensive directory of AI tools and expert prompts for professionals. Based on Toolify.ai's top rankings.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6">Top Categories</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Content Creation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Marketing</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Productivity</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">AI Art</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Development</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6">Top Tools</h3>
+                    <ul class="space-y-3">
+                        <li><a href="https://chat.openai.com" class="text-gray-400 hover:text-white">ChatGPT</a></li>
+                        <li><a href="https://gemini.google.com" class="text-gray-400 hover:text-white">Gemini</a></li>
+                        <li><a href="https://www.perplexity.ai" class="text-gray-400 hover:text-white">Perplexity</a></li>
+                        <li><a href="https://claude.ai" class="text-gray-400 hover:text-white">Claude</a></li>
+                        <li><a href="https://www.midjourney.com" class="text-gray-400 hover:text-white">Midjourney</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-6">Company</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+                <p>© 2023 AIToolFinder. All rights reserved. Tool rankings based on Toolify.ai data.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
